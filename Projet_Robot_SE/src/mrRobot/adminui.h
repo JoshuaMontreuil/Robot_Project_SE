@@ -4,14 +4,14 @@
  *
  * @brief  This component describe the admin user interface. It captures the user's controls and send them to the pilot module.
  *
- * @author Jerome Delatour
- * @date 17-04-2016
- * @version 1
+ * @author Joshua Montreuil
+ * @date 27-01-2023
+ * @version 1.1
  * @section License
  *
  * The MIT License
  *
- * Copyright (c) 2016, Jerome Delatour
+ * Copyright (c) 2023, Joshua Montreuil
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,50 +33,53 @@
  * 
  */
 
-
 #ifndef ADMINUI_H
 #define ADMINUI_H
 
+//----INCLUDES -----------------------------------------------------------------
 #include "pilot.h"
 
+//---- ENUM --------------------------------------------------------------------
 
+/**
+ * \enum log_key_e
+ * \brief Defines the user entry key from their keyboards.
+ */
 typedef enum
 {
-	LOG_LEFT = 'q',
-	LOG_RIGHT = 'd',
-	LOG_FORWARD = 'z',
-	LOG_BACKWARD = 's',
-	LOG_STOP = ' ',
-	LOG_CLEAR = 'e',
-	LOG_ROBOT_STATE = 'r',
-	LOG_QUIT = 'a'
+	LOG_LEFT = 'q',       /**< LOG_LEFT */
+	LOG_RIGHT = 'd',      /**< LOG_RIGHT */
+	LOG_FORWARD = 'z',    /**< LOG_FORWARD */
+	LOG_BACKWARD = 's',   /**< LOG_BACKWARD */
+	LOG_STOP = ' ',       /**< LOG_STOP */
+	LOG_CLEAR = 'e',      /**< LOG_CLEAR */
+	LOG_ROBOT_STATE = 'r',/**< LOG_ROBOT_STATE */
+	LOG_QUIT = 'a'        /**< LOG_QUIT */
 }log_key_e;
+
+//----PUBLIC FUNCTION DECLARATIONS ---------------------------------------------
 /**
- * Start AdminUI and waits for the user's input until the user ask to quit
- *
+ * \fn extern void AdminUI_start()
+ * \brief Start AdminUI and waits for the user's input until the user ask to quit.
  */
 extern void AdminUI_start();
 
-
 /**
- * Stop AdminUI
- *
+ * \fn extern void AdminUI_stop()
+ * \brief Stop AdminUI.
  */
 extern void AdminUI_stop();
 
-
 /**
- * initialize in memory AdminUI
- * 
+ * \fn extern void AdminUI_new()
+ * \brief Initialize in memory AdminUI.
  */
 extern void AdminUI_new();
 
 /**
- * destruct the AdminUI from memory 
- *
+ * \fn extern void AdminUI_free()
+ * \brief Destruct the AdminUI from memory.
  */
 extern void AdminUI_free();
 
-
 #endif /* ADMINUI_H */
-

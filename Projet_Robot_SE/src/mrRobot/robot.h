@@ -6,12 +6,12 @@
  *
  * @author Joshua Montreuil
  * @date 26-01-2023
- * @version version
+ * @version 1.1
  * @section License
  *
  * The MIT License
  *
- * Copyright (c) 2021, Joshua Montreuil
+ * Copyright (c) 2023, Joshua Montreuil
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,17 +36,20 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
+//----INCLUDES -----------------------------------------------------------------
 #include "prose.h"
 
+//---- ENUM --------------------------------------------------------------------
 /**
  * \enum Collision
  * \brief Constant for collisions.
  */
 typedef enum {NO_BUMP=0, BUMPED} Collision;
 
+//---- STRUCTURES --------------------------------------------------------------
 /**
- * @struct SensorStae
- * @brief The captor's states of the robot (bumper and luminosity)
+ * \struct SensorState
+ * \brief The captor's states of the robot (bumper and luminosity).
  */
 typedef struct
 {
@@ -55,8 +58,8 @@ typedef struct
 } SensorState;
 
 /**
- * @struct Robot
- * @brief The captor's states of the robot (bumper and luminosity)
+ * \struct Robot
+ * \brief The captor's states of the robot (bumper and luminosity).
  */
 typedef struct
 {
@@ -67,55 +70,55 @@ typedef struct
 	LightSensor * lightSensor;
 }Robot;
 
+//---- PRIVATE FUNCTION DECLARATIONS -------------------------------------------
 /**
- * Start the Robot (initialize communication and open port)
+ * \fn extern void Robot_start()
+ * \brief Start the Robot (initialize communication and open port).
  */
 extern void Robot_start();
 
-
 /**
- * Stop Robot (stop communication and close port)
+ * \fn extern void Robot_stop()
+ * \brief Stop Robot (stop communication and close port).
  */
 extern void Robot_stop();
 
-
 /**
- * @brief initialize in memory the object Robot
- * 
+ * \fn extern void Robot_new()
+ * \brief Initialize in memory the object Robot.
  */
 extern void Robot_new();
 
-
 /**
- *  @brief destruct the object Robot from memory 
+ *  \fn extern void Robot_free()
+ *  \brief Destruct the object Robot from memory.
  */
 extern void Robot_free();
 
 /**
- * Robot_getRobotSpeed
+ * \fn extern int Robot_getRobotSpeed()
+ * \brief Get the speed of the robot (positive average of the right's and left's current wheel power).
  * 
- * @brief return the speed of the robot (positive average of the right's and left's current wheel power) 
- * @return speed of the robot (beetween 0 and 100)
+ * \return Speed of the robot (between 0 and 100).
  */
 extern int Robot_getRobotSpeed();
 
 /**
- * Robot_getSensorState
+ * \fn extern SensorState Robot_getSensorState()
+ * \brief Get the captor's states of the bumper and the luminosity.
  * 
- * @brief return the captor's states of the bumper and the luminosity
- * @return SensorState
+ * \return SensorState
  */
 extern SensorState Robot_getSensorState();
 
 /**
- * Robot_setWheelsVelocity
+ * \fn extern void Robot_setWheelsVelocity()
+ * \brief Set the power on the wheels of the robot.
  * 
- * @brief set the power on the wheels of the robot
- * @param int mr : right's wheel power, value between -10O and 100
- * @param int ml : left's wheel power, value between -100 and 100
+ * \param int mr : right's wheel power, value between -10O and 100.
+ * \param int ml : left's wheel power, value between -100 and 100.
  */
 extern void Robot_setWheelsVelocity(int mr,int ml);
-
 
 #endif /* ROBOT_H */
 

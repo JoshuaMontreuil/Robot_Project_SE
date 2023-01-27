@@ -1,3 +1,39 @@
+/* -*- mode: c; c-basic-offset: 4; indent-tabs-mode: nil -*- */
+/**
+ * @file  adminUI.c
+ *
+ * @brief  This component describe the admin user interface. It captures the user's controls and send them to the pilot module.
+ *
+ * @author Joshua Montreuil
+ * @date 27-01-2023
+ * @version 1.1
+ * @section License
+ *
+ * The MIT License
+ *
+ * Copyright (c) 2023, Joshua Montreuil
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
+
+//----INCLUDES -----------------------------------------------------------------
 #include "adminui.h"
 #include "pilot.h"
 #include <stdio.h>
@@ -5,18 +41,71 @@
 #include <termios.h>
 #include <unistd.h>
 
-bool_e quit_case = TRUE;
+//---- GLOBAL VARIABLES --------------------------------------------------------
+bool_e quit_case = TRUE; //Used to get out or stay into the while loop.
 
+//---- PRIVATE FUNCTION DECLARATIONS -------------------------------------------
+/**
+ * \fn static void AdminUI_captureChoice()
+ * \brief Gets the key pressed from the user, dispatch to the right functions.
+ */
 static void AdminUI_captureChoice();
+
+/**
+ * \fn static void AdminUI_askMvt(Direction dir)
+ * \brief Ask a movement to the pilot to set wheels speed from the direction sent.
+ *
+ * \param Direction dir: Direction to give to the robot.
+ */
 static void AdminUI_askMVt(Direction dir);
+
+/**
+ * \fn static VelocityVector AdminUI_translate(Direction dir)
+ * \brief Translate a Direction to a VelocityVector object.
+ *
+ * \param Direction dir: Direction to give to the robot.
+ *
+ * \return VelocityVector: translate to a VelocityVector with a speed and a direction.
+ */
 static VelocityVector AdminUI_translate(Direction dir);
+
+/**
+ * \fn static void AdminUI_ask4Log()
+ * \brief Gets the states and values of the sensors from the Pilot to be printed.
+ */
 static void AdminUI_ask4Log();
+
+/**
+ * \fn static void AdminUI_askClearLog()
+ * \brief Ask the user if he really wants to clear the logs.
+ */
 static void AdminUI_askClearLog();
+
+/**
+ * \fn static void AdminUI_eraseLog()
+ * \brief Erase the log of the cmd.
+ */
 static void AdminUI_eraseLog();
+
+/**
+ * \fn static void AdminUI_quit()
+ * \brief Quitting the application.
+ */
 static void AdminUI_quit();
+
+/**
+ * \fn static void AdminUI_run()
+ * \brief Core function of the UI.
+ */
 static void AdminUI_run();
+
+/**
+ * \fn static void AdminUI_display()
+ * \brief Displays the command to be entered to the user.
+ */
 static void AdminUI_display();
 
+//---- PUBLIC FUNCTIONS --------------------------------------------------------
 void AdminUI_new()
 {
 	Pilot_new();
@@ -38,7 +127,7 @@ static void AdminUI_run()
 
 void AdminUI_stop()
 {
-
+	//blank
 }
 
 void AdminUI_free()
@@ -46,8 +135,10 @@ void AdminUI_free()
 	Pilot_free();
 }
 
+//---- PRIVATE FUNCTIONS -------------------------------------------------------
 static void AdminUI_captureChoice()
 {
+	//Method to remove the enter key to be pressed
 	struct termios oldt, newt;
 	tcgetattr(STDIN_FILENO, &oldt);
 	newt = oldt;

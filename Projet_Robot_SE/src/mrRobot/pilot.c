@@ -1,34 +1,74 @@
 /* -*- mode: c; c-basic-offset: 4; indent-tabs-mode: nil -*- */
+/**
+ * @file  pilot.c
+ *
+ * @brief  Create the pilot object, sets the wheel velocity from the user command and Stop/Run the robot.
+ *
+ * @author Joshua Montreuil
+ * @date 26-01-2023
+ * @version 1.1
+ * @section License
+ *
+ * The MIT License
+ *
+ * Copyright (c) 2023, Joshua Montreuil
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
 
+//----INCLUDES -----------------------------------------------------------------
 #include "pilot.h"
 #include "robot.h"
 #include <stdlib.h>
 
+//---- GLOBAL VARIABLES --------------------------------------------------------
 PilotState *pState;
 State_e currentState =IDLE;
 
+//---- PRIVATE FUNCTION DECLARATIONS -------------------------------------------
 /**
- * run
+ * \fn static void Pilot_run(event ev, VelocityVector vel)
+ * \brief State machine of the Pilot, run from different events.
  *
- * @brief description
+ * \param event ev: Gives the event to call.
+ * \param VelocityVector vel: Data with the velocity vector -> speed and direction.
  */
 static void Pilot_run(event ev, VelocityVector vel);
 
 /**
- * sendMvt
+ * \fn static void Pilot_sendMvt(VelocityVector vel)
+ * \brief Sends the movement order to Robot_setWheelsVelocity.
  *
- * @brief description
+ * \param VelocityVector vel: Data with the velocity vector -> speed and direction.
  */
 static void Pilot_sendMvt(VelocityVector vel);
 
 /**
- * hasBumped
+ * \fn static bool_e Pilot_hasBumped()
+ * \brief check if the robot's collision sensors has bumped of not.
  *
- * @brief description
+ * \return bool_e : TRUE if bumped FALSE if not_bumped
  */
 static bool_e Pilot_hasBumped();
 
-
+//---- PUBLIC FUNCTIONS --------------------------------------------------------
 void Pilot_new(void)
 {
 	pState = (PilotState*) malloc(sizeof(PilotState));
@@ -59,7 +99,7 @@ void Pilot_check(void)
 	Pilot_run(CHECK, vel);
 }
 
-
+//---- PRIVATE FUNCTIONS -------------------------------------------------------
 static void Pilot_run(event ev, VelocityVector vel)
 {
 	switch(currentState)

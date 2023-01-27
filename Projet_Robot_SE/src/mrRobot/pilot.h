@@ -2,16 +2,16 @@
 /**
  * @file  pilot.h
  *
- * @brief  description
+ * @brief  header file for pilot.c
  *
- * @author Jerome Delatour
- * @date 17-04-2016
- * @version version
+ * @author Joshua Montreuil
+ * @date 26-01-2023
+ * @version 1.1
  * @section License
  *
  * The MIT License
  *
- * Copyright (c) 2016, Jerome Delatour
+ * Copyright (c) 2023, Joshua Montreuil
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,29 +36,30 @@
 #ifndef PILOT_H
 #define PILOT_H
 
+//----INCLUDES -----------------------------------------------------------------
 #include "prose.h"
 
+//---- ENUM --------------------------------------------------------------------
+/**
+ * \enum Direction
+ * \brief Constant for directions.
+ */
 typedef enum {LEFT=0, RIGHT, FORWARD, BACKWARD, STOP} Direction;
-    
-typedef struct
-{
-    Direction dir;
-    int power;
-} VelocityVector;
 
-typedef struct
-{
-    int speed;
-    int collision;
-    float luminosity;
-} PilotState;
-
+/**
+ * \enum State_e
+ * \brief State for the state machine.
+ */
 typedef enum
 {
 	IDLE,
 	RUNNING
 }State_e;
 
+/**
+ * \enum event
+ * \brief event for the state machine.
+ */
 typedef enum
 {
 	SETVELOCITY,
@@ -66,51 +67,75 @@ typedef enum
 	STOP_EVENT
 }event;
 
+//---- STRUCTURES --------------------------------------------------------------
 /**
- * Start Pilot
- *
+ * \struct VelocityVector
+ * \brief Constants for velocity vector.
+ */
+typedef struct
+{
+    Direction dir;
+    int power;
+} VelocityVector;
+
+/**
+ * \struct PilotState
+ * \brief Constants for pilot state.
+ */
+typedef struct
+{
+    int speed;
+    int collision;
+    float luminosity;
+} PilotState;
+
+//---- PRIVATE FUNCTION DECLARATIONS -------------------------------------------
+/**
+ * \fn extern void Pilot_start()
+ * \brief Start Pilot.
  */
 extern void Pilot_start();
 
 
 /**
- * Stop Pilot
- *
+ * \fn extern void Pilot_stop()
+ * \brief Stop Pilot.
  */
 extern void Pilot_stop();
 
 
 /**
- * initialize in memory the object Pilot
+ * \fn extern void Pilot_new()
+ * \brief Initialize in memory the object Pilot.
  */
 extern void Pilot_new();
 
 
 /**
- * destruct the object Pilot from memory 
+ * \fn extern void Pilot_free()
+ * \brief Destruct the object Pilot from memory.
  */
 extern void Pilot_free();
 
 /**
- * setVelocity
+ * \fn extern void Pilot_setVelocity(VelocityVector vel)
+ * \brief Setting the velocity vector of the Pilot.
  * 
- * @brief description 
- * @param vel 
+ * \param VelocityVector vel.
  */
 extern void Pilot_setVelocity(VelocityVector vel);
 
 /**
- * getState
+ * \fn extern PilotState Pilot_getState()
+ * \brief getter of the State of the Pilot.
  * 
- * @brief description 
- * @return PilotState
+ * \return PilotState.
  */
 extern PilotState Pilot_getState();
 
 /**
- * check
- * 
- * @brief description 
+ * \fn extern void Pilot_check()
+ * \brief gets the sensors state of the robot and put it into the Pilot object.
  */
 extern void Pilot_check();
 
