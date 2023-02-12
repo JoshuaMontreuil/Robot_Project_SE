@@ -35,51 +35,33 @@
 
 #ifndef ADMINUI_H
 #define ADMINUI_H
-
-//----INCLUDES -----------------------------------------------------------------
+/* ----------------------  INCLUDES ------------------------------------------*/
 #include "pilot.h"
-
-//---- ENUM --------------------------------------------------------------------
-
-/**
- * \enum log_key_e
- * \brief Defines the user entry key from their keyboards.
- */
-typedef enum
-{
-	LOG_LEFT = 'q',       /**< LOG_LEFT */
-	LOG_RIGHT = 'd',      /**< LOG_RIGHT */
-	LOG_FORWARD = 'z',    /**< LOG_FORWARD */
-	LOG_BACKWARD = 's',   /**< LOG_BACKWARD */
-	LOG_STOP = ' ',       /**< LOG_STOP */
-	LOG_CLEAR = 'e',      /**< LOG_CLEAR */
-	LOG_ROBOT_STATE = 'r',/**< LOG_ROBOT_STATE */
-	LOG_QUIT = 'a'        /**< LOG_QUIT */
-}log_key_e;
-
-//----PUBLIC FUNCTION DECLARATIONS ---------------------------------------------
+/* ----------------------  PUBLIC TYPE DEFINITIONS ---------------------------*/
+typedef struct AdminUI_t AdminUI;
+/* ----------------------  PUBLIC ENUMERATIONS -------------------------------*/
+/* ----------------------  PUBLIC STRUCTURES ---------------------------------*/
+/* ----------------------  PUBLIC VARIBLES -----------------------------------*/
+/* ----------------------  PUBLIC FUNCTIONS PROTOTYPES  ----------------------*/
 /**
  * \fn extern void AdminUI_start()
  * \brief Start AdminUI and waits for the user's input until the user ask to quit.
  */
-extern void AdminUI_start();
-
+extern void AdminUI_start(AdminUI* padminUI);
 /**
  * \fn extern void AdminUI_stop()
  * \brief Stop AdminUI.
  */
-extern void AdminUI_stop();
-
+extern void AdminUI_stop(AdminUI* padminUI);
 /**
  * \fn extern void AdminUI_new()
  * \brief Initialize in memory AdminUI.
  */
-extern void AdminUI_new();
-
+extern AdminUI* AdminUI_new();
 /**
  * \fn extern void AdminUI_free()
  * \brief Destruct the AdminUI from memory.
  */
-extern void AdminUI_free();
+extern void AdminUI_free(AdminUI* padminUI);
 
 #endif /* ADMINUI_H */

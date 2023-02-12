@@ -6,7 +6,7 @@
  *
  * @author Joshua Montreuil
  * @date 27-01-2023
- * @version 1.1
+ * @version 1.2
  * @section License
  *
  * The MIT License
@@ -33,32 +33,51 @@
  *
  */
 
-//----INCLUDES -----------------------------------------------------------------
+/* ----------------------  INCLUDES  ---------------------------------------- */
 #include "adminui.h"
 #include "pilot.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
-
-//---- GLOBAL VARIABLES --------------------------------------------------------
-bool_e quit_case = TRUE; //Used to get out or stay into the while loop.
-
-//---- PRIVATE FUNCTION DECLARATIONS -------------------------------------------
+/* ----------------------  PRIVATE CONFIGURATIONS  -------------------------- */
+/* ----------------------  PRIVATE TYPE DEFINITIONS  ------------------------ */
+/**
+ * \enum log_key_e
+ * \brief Defines the user entry key from their keyboards.
+ */
+typedef enum
+{
+	LOG_LEFT = 'q',       /**< LOG_LEFT */
+	LOG_RIGHT = 'd',      /**< LOG_RIGHT */
+	LOG_FORWARD = 'z',    /**< LOG_FORWARD */
+	LOG_BACKWARD = 's',   /**< LOG_BACKWARD */
+	LOG_STOP = ' ',       /**< LOG_STOP */
+	LOG_CLEAR = 'e',      /**< LOG_CLEAR */
+	LOG_ROBOT_STATE = 'r',/**< LOG_ROBOT_STATE */
+	LOG_QUIT = 'a'        /**< LOG_QUIT */
+}log_key_e;
+/* ----------------------  PRIVATE STRUCTURES  ------------------------------ */
+struct AdminUI_t
+{
+	Pilot* pilot;
+};
+/* ----------------------  PRIVATE ENUMERATIONS  ---------------------------- */
+/* ----------------------  PRIVATE VARIABLES  ------------------------------- */
+static bool_e quit_case = TRUE; //Used to get out or stay into the while loop.
+/* ----------------------  PRIVATE FUNCTIONS PROTOTYPES  -------------------- */
 /**
  * \fn static void AdminUI_captureChoice()
  * \brief Gets the key pressed from the user, dispatch to the right functions.
  */
-static void AdminUI_captureChoice();
-
+static void AdminUI_captureChoice(AdminUI* pAdminUI);
 /**
  * \fn static void AdminUI_askMvt(Direction dir)
  * \brief Ask a movement to the pilot to set wheels speed from the direction sent.
  *
  * \param Direction dir: Direction to give to the robot.
  */
-static void AdminUI_askMVt(Direction dir);
-
+static void AdminUI_askMVt(AdminUI* pAdminUI, Direction dir);
 /**
  * \fn static VelocityVector AdminUI_translate(Direction dir)
  * \brief Translate a Direction to a VelocityVector object.
@@ -68,75 +87,72 @@ static void AdminUI_askMVt(Direction dir);
  * \return VelocityVector: translate to a VelocityVector with a speed and a direction.
  */
 static VelocityVector AdminUI_translate(Direction dir);
-
 /**
  * \fn static void AdminUI_ask4Log()
  * \brief Gets the states and values of the sensors from the Pilot to be printed.
  */
-static void AdminUI_ask4Log();
-
+static void AdminUI_ask4Log(AdminUI* pAdminUI);
 /**
  * \fn static void AdminUI_askClearLog()
  * \brief Ask the user if he really wants to clear the logs.
  */
 static void AdminUI_askClearLog();
-
 /**
  * \fn static void AdminUI_eraseLog()
  * \brief Erase the log of the cmd.
  */
 static void AdminUI_eraseLog();
-
 /**
  * \fn static void AdminUI_quit()
  * \brief Quitting the application.
  */
-static void AdminUI_quit();
-
+static void AdminUI_quit(AdminUI* pAdminUI);
 /**
  * \fn static void AdminUI_run()
  * \brief Core function of the UI.
  */
-static void AdminUI_run();
-
+static void AdminUI_run(AdminUI* pAdminUI);
 /**
  * \fn static void AdminUI_display()
  * \brief Displays the command to be entered to the user.
  */
-static void AdminUI_display();
-
-//---- PUBLIC FUNCTIONS --------------------------------------------------------
-void AdminUI_new()
+static void AdminUI_display(AdminUI* pAdminUI);
+/* ----------------------  PUBLIC FUNCTIONS  -------------------------------- */
+AdminUI* AdminUI_new()
 {
-	Pilot_new();
+	AdminUI* pAdminUI = (AdminUI*) malloc(sizeof(AdminUI));
+	pAdminUI->pilot = Pilot_new();
+	if(pAdminUI == NULL)
+	{
+		printf("ERROR : pAdminUI i NULL \n");
+		while(1);
+	}
+	return pAdminUI;
 }
-
-void AdminUI_start()
+void AdminUI_start(AdminUI* pAdminUI)
 {
-	Pilot_start();
-	AdminUI_run();
+	Pilot_start(pAdminUI->pilot);
+	AdminUI_run(pAdminUI);
 }
-
-static void AdminUI_run()
+static void AdminUI_run(AdminUI* pAdminUI)
 {
 	while (quit_case)
 	{
-		AdminUI_display();
+		AdminUI_display(pAdminUI);
 	}
 }
-
-void AdminUI_stop()
+void AdminUI_stop(AdminUI* pAdminUI)
 {
 	//blank
 }
-
-void AdminUI_free()
+void AdminUI_free(AdminUI* pAdminUI)
 {
-	Pilot_free();
+	Pilot_free(pAdminUI->pilot);
+	free(pAdminUI);
 }
 
-//---- PRIVATE FUNCTIONS -------------------------------------------------------
-static void AdminUI_captureChoice()
+/* ----------------------  PRIVATE FUNCTIONS  ------------------------------- */
+static void AdminUI_captureChoice(AdminUI* pAdminUI)
 {
 	//Method to remove the enter key to be pressed
 	struct termios oldt, newt;
@@ -150,37 +166,38 @@ static void AdminUI_captureChoice()
 	switch(command)
 	{
 		case LOG_LEFT:
-			AdminUI_askMVt(LEFT);
+			AdminUI_askMVt(pAdminUI,LEFT);
 			break;
 		case LOG_RIGHT:
-			AdminUI_askMVt(RIGHT);
+			AdminUI_askMVt(pAdminUI,RIGHT);
 			break;
 		case LOG_BACKWARD:
-			AdminUI_askMVt(BACKWARD);
+			AdminUI_askMVt(pAdminUI,BACKWARD);
 			break;
 		case LOG_FORWARD:
-			AdminUI_askMVt(FORWARD);
+			AdminUI_askMVt(pAdminUI,FORWARD);
 			break;
 		case LOG_CLEAR:
 			AdminUI_askClearLog();
 			break;
 		case LOG_STOP:
-			AdminUI_askMVt(STOP);
+			AdminUI_askMVt(pAdminUI,STOP);
 			break;
 		case LOG_ROBOT_STATE:
-			AdminUI_ask4Log();
+			AdminUI_ask4Log(pAdminUI);
 			break;
 		case LOG_QUIT:
-			AdminUI_quit();
+			AdminUI_quit(pAdminUI);
 			break;
 		default:
 			break;
 	}
 }
 
-static void AdminUI_askMVt(Direction dir)
+static void AdminUI_askMVt(AdminUI* pAdminUI,Direction dir)
 {
-	Pilot_setVelocity(AdminUI_translate(dir));
+	pAdminUI->pilot->vector = AdminUI_translate(dir);
+	Pilot_setVelocity(pAdminUI->pilot);
 }
 
 static VelocityVector AdminUI_translate(Direction dir)
@@ -191,10 +208,10 @@ static VelocityVector AdminUI_translate(Direction dir)
 	return vel;
 }
 
-static void AdminUI_ask4Log()
+static void AdminUI_ask4Log(AdminUI* pAdminUI)
 {
-	Pilot_check();
-	PilotState p_state = Pilot_getState();
+	Pilot_check(pAdminUI->pilot);
+	PilotState p_state = Pilot_getState(pAdminUI->pilot);
 	printf("\n Collision; %d", p_state.collision);
 	printf("\n Luminosity: %f", p_state.luminosity);
 	printf("\n Speed: %d", p_state.speed);
@@ -210,13 +227,13 @@ static void AdminUI_eraseLog()
 	printf("\033[2J");
 }
 
-static void AdminUI_quit()
+static void AdminUI_quit(AdminUI* pAdminUI)
 {
 	quit_case = FALSE;
-	Pilot_stop();
+	Pilot_stop(pAdminUI->pilot);
 }
 
-static void AdminUI_display()
+static void AdminUI_display(AdminUI* pAdminUI)
 {
 	printf("Robot V1\n");
 	printf("Vous pouvez faire les actions suivantes :\n");
@@ -228,5 +245,5 @@ static void AdminUI_display()
 	printf("e:effacer les logs\n");
 	printf("r:afficher l'état du robot\n");
 	printf("a:quitter\n");
-	AdminUI_captureChoice();
+	AdminUI_captureChoice(pAdminUI);
 }

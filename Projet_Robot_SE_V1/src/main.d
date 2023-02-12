@@ -5,7 +5,8 @@
  /home/joshua/Documents/GitHub/Robot_Project_SE/infox_prose-x86_64-v0.3/include/infox/prose/contact_sensor.h \
  /home/joshua/Documents/GitHub/Robot_Project_SE/infox_prose-x86_64-v0.3/include/infox/prose/light_sensor.h \
  /home/joshua/Documents/GitHub/Robot_Project_SE/infox_prose-x86_64-v0.3/include/infox/prose/prose_brick_pi.h \
- /home/joshua/Documents/GitHub/Robot_Project_SE/infox_prose-x86_64-v0.3/include/infox/prose/prose_infox.h
+ /home/joshua/Documents/GitHub/Robot_Project_SE/infox_prose-x86_64-v0.3/include/infox/prose/prose_infox.h \
+ mrRobot/robot.h
 mrRobot/adminui.h:
 mrRobot/pilot.h:
 /home/joshua/Documents/GitHub/Robot_Project_SE/infox_prose-x86_64-v0.3/include/infox/prose/prose.h:
@@ -15,3 +16,4 @@ mrRobot/pilot.h:
 /home/joshua/Documents/GitHub/Robot_Project_SE/infox_prose-x86_64-v0.3/include/infox/prose/light_sensor.h:
 /home/joshua/Documents/GitHub/Robot_Project_SE/infox_prose-x86_64-v0.3/include/infox/prose/prose_brick_pi.h:
 /home/joshua/Documents/GitHub/Robot_Project_SE/infox_prose-x86_64-v0.3/include/infox/prose/prose_infox.h:
+mrRobot/robot.h:
