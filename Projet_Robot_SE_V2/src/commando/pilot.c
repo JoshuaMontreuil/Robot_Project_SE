@@ -6,7 +6,7 @@
  *
  * @author Joshua Montreuil
  * @date 26-01-2023
- * @version 1.1
+ * @version 2.0
  * @section License
  *
  * The MIT License

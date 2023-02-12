@@ -34,9 +34,49 @@
 #ifndef SRC_TELCO_REMOTEUI_H_
 #define SRC_TELCO_REMOTEUI_H_
 /* ----------------------  INCLUDES ------------------------------------------*/
+#include "client.h"
 /* ----------------------  PUBLIC TYPE DEFINITIONS ---------------------------*/
 /* ----------------------  PUBLIC ENUMERATIONS -------------------------------*/
+/**
+ * \enum log_key_e
+ * \brief Defines the user entry key from their keyboards.
+ */
+typedef enum
+{
+	LOG_LEFT = 'q',       /**< LOG_LEFT */
+	LOG_RIGHT = 'd',      /**< LOG_RIGHT */
+	LOG_FORWARD = 'z',    /**< LOG_FORWARD */
+	LOG_BACKWARD = 's',   /**< LOG_BACKWARD */
+	LOG_STOP = ' ',       /**< LOG_STOP */
+	LOG_CLEAR = 'e',      /**< LOG_CLEAR */
+	LOG_ROBOT_STATE = 'r',/**< LOG_ROBOT_STATE */
+	LOG_QUIT = 'a'        /**< LOG_QUIT */
+}log_key_e;
 /* ----------------------  PUBLIC STRUCTURES ---------------------------------*/
 /* ----------------------  PUBLIC VARIBLES -----------------------------------*/
 /* ----------------------  PUBLIC FUNCTIONS PROTOTYPES  ----------------------*/
+/**
+ * \fn extern void RemoteUI_start()
+ * \brief Start RemoteUI and waits for the user's input until the user ask to quit.
+ */
+extern void RemoteUI_start();
+
+/**
+ * \fn extern void RemoteUI_stop()
+ * \brief Stop RemoteUI.
+ */
+extern void RemoteUI_stop();
+
+/**
+ * \fn extern void RemoteUI_new()
+ * \brief Initialize in memory RemoteUI.
+ */
+extern void RemoteUI_new();
+
+/**
+ * \fn extern void RemoteUI_free()
+ * \brief Destruct the RemoteUI from memory.
+ */
+extern void RemoteUI_free();
+
 #endif /* SRC_TELCO_REMOTEUI_H_ */

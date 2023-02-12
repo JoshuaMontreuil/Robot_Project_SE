@@ -5,7 +5,7 @@
  *
  * @author joshua
  * @date Feb 12, 2023
- * @version 1
+ * @version 1.0
  * @section License
  *
  * The MIT License
