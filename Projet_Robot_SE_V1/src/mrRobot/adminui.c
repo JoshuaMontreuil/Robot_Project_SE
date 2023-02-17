@@ -210,11 +210,15 @@ static VelocityVector AdminUI_translate(Direction dir)
 
 static void AdminUI_ask4Log(AdminUI* pAdminUI)
 {
+	if(pAdminUI->pilot->state == IDLE && pAdminUI->pilot->vector.dir != STOP)
+	{
+		pAdminUI->pilot->state = RUNNING;
+	}
 	Pilot_check(pAdminUI->pilot);
 	PilotState p_state = Pilot_getState(pAdminUI->pilot);
 	printf("\n Collision; %d", p_state.collision);
 	printf("\n Luminosity: %f", p_state.luminosity);
-	printf("\n Speed: %d", p_state.speed);
+	printf("\n Speed: %d:\n", p_state.speed);
 }
 
 static void AdminUI_askClearLog()

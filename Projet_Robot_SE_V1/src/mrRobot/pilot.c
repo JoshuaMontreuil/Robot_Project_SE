@@ -112,6 +112,7 @@ static Transition_s stateMachine[NB_S][NB_E]=
 {
 		[IDLE][SETVELOCITY_E] = {IDLE,VELOCITY_CHANGE_A},
 		[IDLE][SETVELOCITY_CHANGE_E] = {RUNNING,SEND_MVT_A},
+		[IDLE][SETVELOCITY_STOP_E] = {IDLE,SEND_MVT_A},
 		[RUNNING][SETVELOCITY_E] = {RUNNING,VELOCITY_CHANGE_A},
 		[RUNNING][SETVELOCITY_CHANGE_E] = {RUNNING,SEND_MVT_A},
 		[RUNNING][SETVELOCITY_STOP_E] = {IDLE,SEND_MVT_A},
@@ -180,12 +181,8 @@ static void Pilot_run(Pilot* pPilot,event_e ev)
 {
 	State_e tempState;
 	assert(pPilot->state != DEATH_S);
-	printf("\n___DEBUG : pilot vec dir in SM %d \n", pPilot->vector.dir);
 	pPilot->action = stateMachine[pPilot->state][ev].action;
-	printf("\nDEBUG : pilot action in SM %d \n",pPilot->action);
 	tempState = stateMachine[pPilot->state][ev].stateDestination;
-	printf("\nDEBUG : pilot State in SM %d \n", tempState);
-	printf("\nDEBUG : pilot event in SM %d ___\n", ev);
 	if(tempState != FORGET_S)
 	{
 		actionsTab[pPilot->action](pPilot);
@@ -195,7 +192,6 @@ static void Pilot_run(Pilot* pPilot,event_e ev)
 
 static void Pilot_sendMvt(Pilot* pPilot)
 {
-	printf("\n DEBUG : pilot speed %d\n", pPilot->vector.power);
 	switch(pPilot->vector.dir)
 	{
 		case LEFT:
@@ -221,7 +217,6 @@ static void Pilot_Bump_Check(Pilot* pPilot)
 {
 	if(Pilot_hasBumped(pPilot))
 	{
-		pPilot->state = IDLE;
 		Pilot_run(pPilot, CHECKED_E);
 	}
 }
