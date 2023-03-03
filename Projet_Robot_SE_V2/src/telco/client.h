@@ -33,10 +33,53 @@
  */
 #ifndef SRC_TELCO_CLIENT_H_
 #define SRC_TELCO_CLIENT_H_
+#include "../commun.h"
 /* ----------------------  INCLUDES ------------------------------------------*/
 /* ----------------------  PUBLIC TYPE DEFINITIONS ---------------------------*/
+/**
+ * \struct Client
+ * \brief Client object.
+ */
+typedef struct Client_t Client;
 /* ----------------------  PUBLIC ENUMERATIONS -------------------------------*/
 /* ----------------------  PUBLIC STRUCTURES ---------------------------------*/
+struct Client_t
+{
+	const char * ip;
+	int un_socket;
+	struct sockaddr_in adresse_du_serveur;
+	DesDonnees donnees;
+};
 /* ----------------------  PUBLIC VARIBLES -----------------------------------*/
 /* ----------------------  PUBLIC FUNCTIONS PROTOTYPES  ----------------------*/
+/**
+ * \fn
+ * \brief
+ */
+extern Client* Client_new();
+/**
+ * \fn
+ * \brief
+ */
+extern void Client_free(Client* pClient);
+/**
+ * \fn
+ * \brief
+ */
+extern void Client_start(Client* pClient);
+/**
+ * \fn
+ * \brief
+ */
+extern void Client_stop(Client* pClient);
+/**
+ * \fn
+ * \brief
+ */
+extern void Client_sendMsg(Client* pClient);
+/**
+ * \fn
+ * \brief
+ */
+extern void Client_readMsg(Client* pClient);
 #endif /* SRC_TELCO_CLIENT_H_ */

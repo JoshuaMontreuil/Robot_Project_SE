@@ -1,11 +1,11 @@
 /**
- * @file  server.h
+ * @file  commun.h
  *
  * @brief
  *
  * @author joshua
- * @date Feb 12, 2023
- * @version 1.0
+ * @date Feb 28, 2023
+ * @version 1
  * @section License
  *
  * The MIT License
@@ -31,35 +31,52 @@
  * THE SOFTWARE.
  *
  */
-#ifndef SRC_COMMANDO_SERVER_H_
-#define SRC_COMMANDO_SERVER_H_
-/* ----------------------  INCLUDES ------------------------------------------*/
-#include "../commun.h"
-#include "pilot.h"
-/* ----------------------  PUBLIC TYPE DEFINITIONS ---------------------------*/
+#ifndef SRC_COMMUN_H_
+#define SRC_COMMUN_H_
+#include <arpa/inet.h>
+#define PORT_DU_SERVEUR (12346)
+
+
 /**
- * \struct Server
- * \brief Server object.
+ * \enum Direction
+ * \brief Constant for directions.
  */
-typedef struct Server_t Server;
-/* ----------------------  PUBLIC ENUMERATIONS -------------------------------*/
-/* ----------------------  PUBLIC STRUCTURES ---------------------------------*/
-struct Server_t
+typedef enum {LEFT=0, RIGHT, FORWARD, BACKWARD, STOP} Direction;
+/**
+ * \struct VelocityVector
+ * \brief Constants for velocity vector.
+ */
+typedef struct
 {
-	Pilot* pilot;
-	int socket_ecoute;
-	int socket_donnees;
-	struct sockaddr_in mon_adresse;
-	DesDonnees donnees;
-};
-/* ----------------------  PUBLIC VARIBLES -----------------------------------*/
-/* ----------------------  PUBLIC FUNCTIONS PROTOTYPES  ----------------------*/
-extern Server* Server_new();
+    Direction dir;
+    int power;
+} VelocityVector;
 
-extern void Server_start(Server* pServer);
+/**
+ * \struct PilotState
+ * \brief Constants for pilot state.
+ */
+typedef struct
+{
+    int speed;
+    int collision;
+    float luminosity;
+} PilotState;
 
-extern void Server_stop(Server* pServer);
+/**
+ * \brief Boolean.
+ *
+ * bool_e représente un booléen, il existe sous 2 états.
+ */
 
-extern void Server_free(Server* pServer);
+typedef struct{
+    int direction;
+    int power;
+    float luminosity;
+    int bump;
+    int askLog; //0 no, 1 yes.
+    int stop; //0 no stop, 1 stop.
+}DesDonnees;
 
-#endif /* SRC_COMMANDO_SERVER_H_ */
+
+#endif /* SRC_COMMUN_H_ */

@@ -35,7 +35,10 @@
 #define SRC_TELCO_REMOTEUI_H_
 /* ----------------------  INCLUDES ------------------------------------------*/
 #include "client.h"
+#include "../commun.h"
+#include "prose.h"
 /* ----------------------  PUBLIC TYPE DEFINITIONS ---------------------------*/
+typedef struct RemoteUI_t RemoteUI;
 /* ----------------------  PUBLIC ENUMERATIONS -------------------------------*/
 /**
  * \enum log_key_e
@@ -56,27 +59,27 @@ typedef enum
 /* ----------------------  PUBLIC VARIBLES -----------------------------------*/
 /* ----------------------  PUBLIC FUNCTIONS PROTOTYPES  ----------------------*/
 /**
- * \fn extern void RemoteUI_start()
+ * \fn extern void RemoteUI_start(RemoteUI* pRemoteUI)
  * \brief Start RemoteUI and waits for the user's input until the user ask to quit.
  */
-extern void RemoteUI_start();
+extern void RemoteUI_start(RemoteUI* pRemoteUI);
 
 /**
- * \fn extern void RemoteUI_stop()
+ * \fn extern void RemoteUI_stop(RemoteUI* pRemoteUI)
  * \brief Stop RemoteUI.
  */
-extern void RemoteUI_stop();
+extern void RemoteUI_stop(RemoteUI* pRemoteUI);
 
 /**
- * \fn extern void RemoteUI_new()
+ * \fn extern RemoteUI* RemoteUI_new()
  * \brief Initialize in memory RemoteUI.
  */
-extern void RemoteUI_new();
+extern RemoteUI* RemoteUI_new();
 
 /**
- * \fn extern void RemoteUI_free()
+ * \fn extern void RemoteUI_free(RemoteUI* pRemoteUI)
  * \brief Destruct the RemoteUI from memory.
  */
-extern void RemoteUI_free();
+extern void RemoteUI_free(RemoteUI* pRemoteUI);
 
 #endif /* SRC_TELCO_REMOTEUI_H_ */

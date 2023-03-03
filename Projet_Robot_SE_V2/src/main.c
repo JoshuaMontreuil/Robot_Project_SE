@@ -33,17 +33,102 @@
  * 
  */
 
-#include ""
+#include "telco/remoteUI.h"
+#include "commando/server.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <termios.h>
+#include <unistd.h>
+/* ----------------------  PRIVATE CONFIGURATIONS  -------------------------- */
+/* ----------------------  PRIVATE TYPE DEFINITIONS  ------------------------ */
+/**
+ * \enum log_keymain_e
+ * \brief Defines the user entry key from their keyboards.
+ */
+typedef enum
+{
+	LOG_COMMANDO = '1',
+	LOG_TELCO = '2',
+	LOG_QUITM = '3'
+}log_keymain_e;
+/* ----------------------  PRIVATE STRUCTURES  ------------------------------ */
+/* ----------------------  PRIVATE ENUMERATIONS  ---------------------------- */
+/* ----------------------  PRIVATE VARIABLES  ------------------------------- */
+/* ----------------------  PRIVATE FUNCTIONS PROTOTYPES  -------------------- */
+static int Main_capture_choice();
+static int Main_display();
+/* ----------------------  PUBLIC FUNCTIONS  -------------------------------- */
+/* ----------------------  PRIVATE FUNCTIONS  ------------------------------- */
 
 /**
  * starts the robot V1 application
  */
 int main (int argc, char *argv[])
 {
-  //AdminUI_new();
-  //AdminUI_start();
-  //AdminUI_stop();
-  //AdminUI_free();
-  return 0;
+	int main_loop = 0;
+	while(main_loop == 0)
+	{
+		main_loop = Main_display();
+	}
+
+	if(main_loop == 1)
+	{
+		Server * pServer = Server_new();
+		Server_start(pServer); //fonction bloquante ici
+		Server_stop(pServer);
+		Server_free(pServer);
+	}
+	else if(main_loop == 2)
+	{
+		RemoteUI* pRemoteUI = RemoteUI_new();
+		RemoteUI_start(pRemoteUI);
+		RemoteUI_stop(pRemoteUI);
+		RemoteUI_free(pRemoteUI);
+	}
+	else
+	{
+		printf("Bye \n");
+	}
+	return 0;
 }
+
+static int Main_capture_choice()
+{
+	int return_value = 0;
+	struct termios oldt, newt;
+	tcgetattr(STDIN_FILENO, &oldt);
+	newt = oldt;
+	newt.c_lflag &= ~(ICANON | ECHO);
+	tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+	log_keymain_e command = getchar();
+	tcsetattr(STDIN_FILENO,TCSANOW, &oldt);
+
+	switch(command)
+		{
+			case LOG_COMMANDO:
+				return_value = 1;
+				break;
+			case LOG_TELCO:
+				return_value = 2;
+				break;
+			case LOG_QUITM:
+				return_value = 3;
+				break;
+			default:
+				break;
+		}
+	return return_value;
+}
+
+
+static int Main_display()
+{
+	printf("--------- Accueil Robot V2 ---------\n");
+	printf("-------- Voulez vous lancer : ------\n");
+	printf("---------- 1 : Commando ------------\n");
+	printf("----------- 2 : Telco --------------\n");
+	printf("---------- 3 : Quitter -------------\n");
+	return Main_capture_choice();
+}
+
 

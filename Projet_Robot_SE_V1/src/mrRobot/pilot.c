@@ -159,6 +159,10 @@ void Pilot_check(Pilot* pPilot)
 	pPilot->PState.collision = Robot_getSensorState(pPilot->robot).collision;
 	pPilot->PState.luminosity = Robot_getSensorState(pPilot->robot).luminosity;
 	pPilot->PState.speed = Robot_getRobotSpeed(pPilot->robot);
+	if(pPilot->state == IDLE && pPilot->vector.dir != STOP)
+	{
+		pPilot->state = RUNNING;
+	}
 	Pilot_run(pPilot,CHECK_E);
 }
 

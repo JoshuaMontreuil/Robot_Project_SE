@@ -33,26 +33,34 @@
  *
  */
 
-//----INCLUDES -----------------------------------------------------------------
+/* ----------------------  INCLUDES  ---------------------------------------- */
 #include "robot.h"
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdio.h>
-
-//---- CONSTANT DEFINITIONS ----------------------------------------------------
+/* ----------------------  PRIVATE CONFIGURATIONS  -------------------------- */
 #define LEFT_MOTOR MD
 #define RIGHT_MOTOR MA
 #define LIGHT_SENSOR S1
 #define FRONT_BUMPER S3
 #define FLOOR_SENSOR S2
-
-//---- GLOBAL VARIABLES --------------------------------------------------------
-const char adresse_infox[] = "127.0.0.1";
-const int port = 12345;
-Robot *probot;
-
-//---- PUBLIC FUNCTIONS --------------------------------------------------------
-void Robot_start(void)
+/* ----------------------  PRIVATE TYPE DEFINITIONS  ------------------------ */
+/* ----------------------  PRIVATE STRUCTURES  ------------------------------ */
+struct Robot_t
+{
+	Motor * rightMotor;
+	Motor * leftMotor;
+	ContactSensor * FloorSensor;
+	ContactSensor * FrontSensor;
+	LightSensor * lightSensor;
+};
+/* ----------------------  PRIVATE ENUMERATIONS  ---------------------------- */
+/* ----------------------  PRIVATE VARIABLES  ------------------------------- */
+static const char adresse_infox[] = "127.0.0.1";
+static const int port = 12345;
+/* ----------------------  PRIVATE FUNCTIONS PROTOTYPES  -------------------- */
+/* ----------------------  PUBLIC FUNCTIONS  -------------------------------- */
+void Robot_start(Robot* pRobot)
 {
 	if(ProSE_Intox_init(adresse_infox,port) == -1)
 	{
@@ -60,96 +68,104 @@ void Robot_start(void)
 	}
 
 	//Open the ports of the Sensors
-	probot->FloorSensor = ContactSensor_open(FLOOR_SENSOR); //floor sensor
-	if(probot->FloorSensor == NULL)
+	pRobot->FloorSensor = ContactSensor_open(FLOOR_SENSOR); //floor sensor
+	if(pRobot->FloorSensor == NULL)
 	{
 		PProseError("Error with the instance floor sensor.");
 	}
-	probot->FrontSensor = ContactSensor_open(FRONT_BUMPER); //front bumper
-	if(probot->FrontSensor == NULL)
+	pRobot->FrontSensor = ContactSensor_open(FRONT_BUMPER); //front bumper
+	if(pRobot->FrontSensor == NULL)
 	{
 		PProseError("Error with the instance front bumper.");
 	}
-	probot->lightSensor = LightSensor_open(LIGHT_SENSOR); //light sensor
-	if(probot->lightSensor == NULL)
+	pRobot->lightSensor = LightSensor_open(LIGHT_SENSOR); //light sensor
+	if(pRobot->lightSensor == NULL)
 	{
 		PProseError("Error with the instance light sensor.");
 	}
 
 	//Open the ports of the motors
-	probot->leftMotor = Motor_open(LEFT_MOTOR); //left motor
-	if(probot->leftMotor == NULL)
+	pRobot->leftMotor = Motor_open(LEFT_MOTOR); //left motor
+	if(pRobot->leftMotor == NULL)
 	{
 		PProseError("Error with the instance left motor.");
 	}
-	probot->rightMotor = Motor_open(RIGHT_MOTOR); //right motor
-	if(probot->rightMotor == NULL)
+	pRobot->rightMotor = Motor_open(RIGHT_MOTOR); //right motor
+	if(pRobot->rightMotor == NULL)
 	{
 		PProseError("Error with the instance right motor.");
 	}
 }
 
-void Robot_stop(void)
+void Robot_stop(Robot* pRobot)
 {
 	ProSE_Intox_close();
 
 	//Closing the motors
-	if(Motor_close(probot->leftMotor) == -1)
+	if(Motor_close(pRobot->leftMotor) == -1)
 	{
 		PProseError("Error while closing left motor.");
 	}
-	if(Motor_close(probot->rightMotor) == -1)
+	if(Motor_close(pRobot->rightMotor) == -1)
 	{
 		PProseError("Error while closing right motor.");
 	}
 
 	//Closing the sensors
-	if(ContactSensor_close(probot->FrontSensor) == -1)
+	if(ContactSensor_close(pRobot->FrontSensor) == -1)
 	{
 		PProseError("Error while closing front sensor.");
 	}
-	if(ContactSensor_close(probot->FloorSensor) == -1)
+	if(ContactSensor_close(pRobot->FloorSensor) == -1)
 	{
 		PProseError("Error while closing contact sensor.");
 	}
-	if(LightSensor_close(probot->lightSensor) == -1)
+	if(LightSensor_close(pRobot->lightSensor) == -1)
 	{
 		PProseError("Error while closing light sensor.");
 	}
 }
 
-void Robot_new(void)
+Robot* Robot_new(void)
 {
-	probot = (Robot *) malloc(sizeof(Robot));
+	Robot* pRobot = (Robot*) malloc(sizeof(Robot));
+	if(pRobot == NULL)
+	{
+		printf("ERROR : pRobot is NULL /n");
+		while(1);
+	}
+	return pRobot;
 }
 
-void Robot_free(void)
+void Robot_free(Robot* pRobot)
 {
-	free(probot);
+	printf("Destruction pRobot");
+	free(pRobot);
 }
 
-void Robot_setWheelsVelocity(int mr,int ml)
+void Robot_setWheelsVelocity(Robot* pRobot,int mr,int ml)
 {
-	if(Motor_setCmd(probot->leftMotor,ml) == -1)
+	if(Motor_setCmd(pRobot->leftMotor,ml) == -1)
 	{
 		PProseError("The command has not been given to the left motor.");
 	}
-	if(Motor_setCmd(probot->rightMotor,mr) == -1)
+	if(Motor_setCmd(pRobot->rightMotor,mr) == -1)
 	{
 		PProseError("The command has not been given to the right motor.");
 	}
 }
 
-int Robot_getRobotSpeed(void)
+int Robot_getRobotSpeed(Robot* pRobot)
 {
-	return ((abs(Motor_getCmd(probot->leftMotor)) + abs(Motor_getCmd(probot->rightMotor))) / 2);
+	return ((abs(Motor_getCmd(pRobot->leftMotor)) + abs(Motor_getCmd(pRobot->rightMotor))) / 2);
 }
 
-SensorState Robot_getSensorState(void)
+SensorState Robot_getSensorState(Robot* pRobot)
 {
 	SensorState sensorStatus;
-	sensorStatus.collision = (ContactSensor_getStatus(probot->FloorSensor) || ContactSensor_getStatus(probot->FrontSensor))? BUMPED : NO_BUMP;
-	sensorStatus.luminosity = LightSensor_getStatus(probot->lightSensor);
+	sensorStatus.collision = (ContactSensor_getStatus(pRobot->FloorSensor) || ContactSensor_getStatus(pRobot->FrontSensor))? BUMPED : NO_BUMP;
+	sensorStatus.luminosity = LightSensor_getStatus(pRobot->lightSensor);
 
 	return sensorStatus;
 }
+/* ----------------------  PRIVATE FUNCTIONS  ------------------------------- */

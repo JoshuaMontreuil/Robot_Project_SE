@@ -39,23 +39,27 @@
 #include <unistd.h>
 /* ----------------------  PRIVATE CONFIGURATIONS  -------------------------- */
 /* ----------------------  PRIVATE TYPE DEFINITIONS  ------------------------ */
+struct RemoteUI_t
+{
+	Client* client;
+};
 /* ----------------------  PRIVATE STRUCTURES  ------------------------------ */
 /* ----------------------  PRIVATE ENUMERATIONS  ---------------------------- */
 /* ----------------------  PRIVATE VARIABLES  ------------------------------- */
 bool_e quit_case = TRUE; //Used to get out or stay into the while loop.
 /* ----------------------  PRIVATE FUNCTIONS PROTOTYPES  -------------------- */
 /**
- * \fn static void RemoteUI_captureChoice()
+ * \fn static void RemoteUI_captureChoice(RemoteUI* pRemoteUI)
  * \brief Gets the key pressed from the user, dispatch to the right functions.
  */
-static void RemoteUI_captureChoice();
+static void RemoteUI_captureChoice(RemoteUI* pRemoteUI);
 /**
  * \fn static void RemoteUI_askMvt(Direction dir)
  * \brief Ask a movement to the pilot to set wheels speed from the direction sent.
  *
  * \param Direction dir: Direction to give to the robot.
  */
-static void RemoteUI_askMVt(Direction dir);
+static void RemoteUI_askMVt(RemoteUI* pRemoteUI,Direction dir);
 /**
  * \fn static VelocityVector RemoteUI_translate(Direction dir)
  * \brief Translate a Direction to a VelocityVector object.
@@ -84,16 +88,161 @@ static void RemoteUI_eraseLog();
  * \fn static void RemoteUI_quit()
  * \brief Quitting the application.
  */
-static void RemoteUI_quit();
+static void RemoteUI_quit(RemoteUI* pRemoteUI);
 /**
  * \fn static void RemoteUI_run()
  * \brief Core function of the UI.
  */
 static void RemoteUI_run();
 /**
- * \fn static void RemoteUI_display()
+ * \fn static void RemoteUI_display(RemoteUI* pRemoteUI)
  * \brief Displays the command to be entered to the user.
  */
-static void RemoteUI_display();
+static void RemoteUI_display(RemoteUI* pRemoteUI);
+/**
+ * \fn static void RemoteUI_setIP(in ip)
+ * \brief used to set the ip for the communication.
+ *
+ * \param char ip : the ip for the commando.
+ */
+static void RemoteUI_setIP(RemoteUI* pRemoteUI, const char * ip);
 /* ----------------------  PUBLIC FUNCTIONS  -------------------------------- */
+RemoteUI* RemoteUI_new()
+{
+	RemoteUI* pRemoteUI = (RemoteUI*) malloc(sizeof(RemoteUI));
+	pRemoteUI->client = Client_new();
+	if(pRemoteUI == NULL)
+	{
+		printf("ERROR : pAdminUI i NULL \n");
+		while(1);
+	}
+	return pRemoteUI;
+}
+void RemoteUI_start(RemoteUI* pRemoteUI)
+{
+	RemoteUI_setIP(pRemoteUI, (char * )"127.0.0.1");
+	Client_start(pRemoteUI->client);
+	RemoteUI_run(pRemoteUI);
+}
+static void RemoteUI_run(RemoteUI* pRemoteUI)
+{
+	while (quit_case)
+	{
+		RemoteUI_display(pRemoteUI);
+	}
+}
+void RemoteUI_stop(RemoteUI* pRemoteUI)
+{
+	//blank
+}
+void RemoteUI_free(RemoteUI* pRemoteUI)
+{
+	Client_free(pRemoteUI->client);
+	free(pRemoteUI);
+}
 /* ----------------------  PRIVATE FUNCTIONS  ------------------------------- */
+static void RemoteUI_captureChoice(RemoteUI* pRemoteUI)
+{
+	//Method to remove the enter key to be pressed
+	struct termios oldt, newt;
+	tcgetattr(STDIN_FILENO, &oldt);
+	newt = oldt;
+	newt.c_lflag &= ~(ICANON | ECHO);
+	tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+	log_key_e command = getchar();
+	tcsetattr(STDIN_FILENO,TCSANOW, &oldt);
+
+	switch(command)
+	{
+		case LOG_LEFT:
+			RemoteUI_askMVt(pRemoteUI,LEFT);
+			break;
+		case LOG_RIGHT:
+			RemoteUI_askMVt(pRemoteUI,RIGHT);
+			break;
+		case LOG_BACKWARD:
+			RemoteUI_askMVt(pRemoteUI,BACKWARD);
+			break;
+		case LOG_FORWARD:
+			RemoteUI_askMVt(pRemoteUI,FORWARD);
+			break;
+		case LOG_CLEAR:
+			RemoteUI_askClearLog();
+			break;
+		case LOG_STOP:
+			RemoteUI_askMVt(pRemoteUI,STOP);
+			break;
+		case LOG_ROBOT_STATE:
+			RemoteUI_ask4Log(pRemoteUI);
+			break;
+		case LOG_QUIT:
+			RemoteUI_quit(pRemoteUI);
+			break;
+		default:
+			break;
+	}
+}
+
+static void RemoteUI_askMVt(RemoteUI* pRemoteUI,Direction dir)
+{
+	VelocityVector vel = RemoteUI_translate(dir);
+	pRemoteUI->client->donnees.direction = vel.dir;
+	pRemoteUI->client->donnees.power = vel.power;
+	Client_sendMsg(pRemoteUI->client);
+}
+
+static VelocityVector RemoteUI_translate(Direction dir)
+{
+	VelocityVector vel;
+	vel.power = 100;
+	vel.dir = dir;
+	return vel;
+}
+
+static void RemoteUI_ask4Log(RemoteUI* pRemoteUI)
+{
+	pRemoteUI->client->donnees.askLog = 1;
+	Client_sendMsg(pRemoteUI->client);
+	Client_readMsg(pRemoteUI->client);
+	printf("\n Collision; %d", pRemoteUI->client->donnees.bump);
+	printf("\n Luminosity: %f", pRemoteUI->client->donnees.luminosity);
+	printf("\n Speed: %d:\n", pRemoteUI->client->donnees.power);
+}
+
+
+static void RemoteUI_askClearLog()
+{
+	RemoteUI_eraseLog();
+}
+
+static void RemoteUI_eraseLog()
+{
+	printf("\033[2J");
+}
+
+static void RemoteUI_quit(RemoteUI* pRemoteUI)
+{
+	quit_case = FALSE;
+	pRemoteUI->client->donnees.stop = 1;
+	Client_sendMsg(pRemoteUI->client);
+}
+
+static void RemoteUI_display(RemoteUI* pRemoteUI)
+{
+	printf("Robot V2\n");
+	printf("Vous pouvez faire les actions suivantes :\n");
+	printf("q:aller à gauche\n");
+	printf("d:aller à droite\n");
+	printf("z:avancer\n");
+	printf("s:reculer\n");
+	printf(" :stopper\n");
+	printf("e:effacer les logs\n");
+	printf("r:afficher l'état du robot\n");
+	printf("a:quitter\n");
+	RemoteUI_captureChoice(pRemoteUI);
+}
+
+static void RemoteUI_setIP(RemoteUI* pRemoteUI, const char * ip)
+{
+	pRemoteUI->client->ip = ip;
+}

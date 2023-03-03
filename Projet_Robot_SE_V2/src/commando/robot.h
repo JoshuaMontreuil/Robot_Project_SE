@@ -35,18 +35,14 @@
 
 #ifndef SRC_COMMANDO_ROBOT_H
 #define SRC_COMMANDO_ROBOT_H
-
-//----INCLUDES -----------------------------------------------------------------
+/* ----------------------  INCLUDES ------------------------------------------*/
 #include "prose.h"
-
-//---- ENUM --------------------------------------------------------------------
+/* ----------------------  PUBLIC TYPE DEFINITIONS ---------------------------*/
 /**
  * \enum Collision
  * \brief Constant for collisions.
  */
 typedef enum {NO_BUMP=0, BUMPED} Collision;
-
-//---- STRUCTURES --------------------------------------------------------------
 /**
  * \struct SensorState
  * \brief The captor's states of the robot (bumper and luminosity).
@@ -59,58 +55,47 @@ typedef struct
 
 /**
  * \struct Robot
- * \brief The captor's states of the robot (bumper and luminosity).
+ * \brief Robot object.
  */
-typedef struct
-{
-	Motor * rightMotor;
-	Motor * leftMotor;
-	ContactSensor * FloorSensor;
-	ContactSensor * FrontSensor;
-	LightSensor * lightSensor;
-}Robot;
-
-//---- PRIVATE FUNCTION DECLARATIONS -------------------------------------------
+typedef struct Robot_t Robot;
+/* ----------------------  PUBLIC ENUMERATIONS -------------------------------*/
+/* ----------------------  PUBLIC STRUCTURES ---------------------------------*/
+/* ----------------------  PUBLIC VARIBLES -----------------------------------*/
+/* ----------------------  PUBLIC FUNCTIONS PROTOTYPES  ----------------------*/
 /**
  * \fn extern void Robot_start()
  * \brief Start the Robot (initialize communication and open port).
  */
-extern void Robot_start();
-
+extern void Robot_start(Robot* pRobot);
 /**
  * \fn extern void Robot_stop()
  * \brief Stop Robot (stop communication and close port).
  */
-extern void Robot_stop();
-
+extern void Robot_stop(Robot* pRobot);
 /**
  * \fn extern void Robot_new()
  * \brief Initialize in memory the object Robot.
  */
-extern void Robot_new();
-
+extern Robot* Robot_new();
 /**
  *  \fn extern void Robot_free()
  *  \brief Destruct the object Robot from memory.
  */
-extern void Robot_free();
-
+extern void Robot_free(Robot* pRobot);
 /**
  * \fn extern int Robot_getRobotSpeed()
  * \brief Get the speed of the robot (positive average of the right's and left's current wheel power).
  * 
  * \return Speed of the robot (between 0 and 100).
  */
-extern int Robot_getRobotSpeed();
-
+extern int Robot_getRobotSpeed(Robot* pRobot);
 /**
  * \fn extern SensorState Robot_getSensorState()
  * \brief Get the captor's states of the bumper and the luminosity.
  * 
  * \return SensorState
  */
-extern SensorState Robot_getSensorState();
-
+extern SensorState Robot_getSensorState(Robot* pRobot);
 /**
  * \fn extern void Robot_setWheelsVelocity()
  * \brief Set the power on the wheels of the robot.
@@ -118,7 +103,7 @@ extern SensorState Robot_getSensorState();
  * \param int mr : right's wheel power, value between -10O and 100.
  * \param int ml : left's wheel power, value between -100 and 100.
  */
-extern void Robot_setWheelsVelocity(int mr,int ml);
+extern void Robot_setWheelsVelocity(Robot* pRobot,int mr,int ml);
 
 #endif /* SRC_COMMANDO_ROBOT_H */
 
