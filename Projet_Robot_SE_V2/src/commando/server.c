@@ -123,6 +123,7 @@ static void Server_run(Server* pServer)
 	{
 		Pilot_stop(pServer->pilot);
 		pServer->donnees.stop = 0;
+		Server_stop(pServer);
 		//shut_down = TRUE;
 	}
 	else

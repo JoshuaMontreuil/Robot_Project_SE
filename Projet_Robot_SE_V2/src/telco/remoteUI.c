@@ -133,7 +133,7 @@ static void RemoteUI_run(RemoteUI* pRemoteUI)
 }
 void RemoteUI_stop(RemoteUI* pRemoteUI)
 {
-	//blank
+	Client_stop(pRemoteUI->client);
 }
 void RemoteUI_free(RemoteUI* pRemoteUI)
 {

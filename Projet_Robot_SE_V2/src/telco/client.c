@@ -51,9 +51,11 @@
 /* ----------------------  PUBLIC FUNCTIONS  -------------------------------- */
 void Client_start(Client* pClient)
 {
+	pClient->un_socket = socket(PF_INET, SOCK_STREAM, 0);
 	pClient->adresse_du_serveur.sin_family = AF_INET;
 	pClient->adresse_du_serveur.sin_port = htons(PORT_DU_SERVEUR);
 	pClient->adresse_du_serveur.sin_addr = *((struct in_addr *)gethostbyname(pClient->ip)->h_addr_list[0]);
+	connect(pClient->un_socket, (struct sockaddr *)&pClient->adresse_du_serveur,sizeof(pClient->adresse_du_serveur));
 }
 
 Client* Client_new(void)
@@ -69,7 +71,7 @@ Client* Client_new(void)
 
 void Client_stop(Client* pClient)
 {
-	//blank
+	close(pClient->un_socket);
 }
 
 void Client_free(Client* pClient)
@@ -79,21 +81,16 @@ void Client_free(Client* pClient)
 
 void Client_sendMsg(Client* pClient)
 {
-	pClient->un_socket = socket(PF_INET, SOCK_STREAM, 0);
-	connect(pClient->un_socket, (struct sockaddr *)&pClient->adresse_du_serveur,sizeof(pClient->adresse_du_serveur));
 	DesDonnees data;
 	data = pClient->donnees;
 	int quantite_envoyee;
 	quantite_envoyee = write(pClient->un_socket, &data, sizeof(data));
 	printf("LOG_MSG_SENT\n");
-	close(pClient->un_socket);
 }
 
 void Client_readMsg(Client* pClient)
 {
 	printf("dans read avant connexion\n");
-	pClient->un_socket = socket(PF_INET, SOCK_STREAM, 0);
-	connect(pClient->un_socket, (struct sockaddr *)&pClient->adresse_du_serveur,sizeof(pClient->adresse_du_serveur));
 	DesDonnees data;
 	printf("dans read\n");
 	read(pClient->un_socket, &data, sizeof(data));
@@ -105,7 +102,6 @@ void Client_readMsg(Client* pClient)
 	printf("- bump : %d\n", pClient->donnees.bump);
 	printf("- luminosity : %f\n", pClient->donnees.luminosity);
 	printf("- stop : %d\n", pClient->donnees.stop);
-	close(pClient->un_socket);
 	/*pClient->donnees.direction = ntohl(data.direction);
 	pClient->donnees.power = ntohl(data.power);
 	pClient->donnees.luminosity = ntohl(data.luminosity);
